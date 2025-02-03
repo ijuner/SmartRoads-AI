@@ -8,7 +8,6 @@ License Plate Detection is an AI-driven solution designed for real-time recognit
 
 🛠️ Proposed Technologies 
 	•	Programming Language: Python
-	•	Deep Learning Framework: TensorFlow / PyTorch
 	•	Computer Vision: OpenCV
 	•	OCR Engine: Tesseract OCR
 	•	Dataset: Open-source license plate datasets for training
