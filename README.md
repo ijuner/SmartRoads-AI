@@ -17,6 +17,6 @@ License Plate Detection is an AI-driven solution designed for real-time recognit
 
 To set up the environment, run:
 
-git clone https://github.com/your-username/License-Plate-Detection.git  
+git clone git@github.com:ijuner/License-Plate-Detection.git 
 cd License-Plate-Detection  
 pip install -r requirements.txt  
