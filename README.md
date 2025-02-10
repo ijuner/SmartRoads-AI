@@ -1,4 +1,4 @@
-🚗 License Plate Detection
+🚗 SmartRoads AI
 
 A Smart Road AI Capstone Project
 
