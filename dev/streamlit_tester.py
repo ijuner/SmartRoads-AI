@@ -4,7 +4,7 @@ import json
 import os
 
 # API endpoint
-local_url = "http://localhost:5000/post/check_drowsiness"
+local_url = "http://localhost:5000/api/v1/check_drowsiness"
 api_env = os.getenv("API_ENV", "local")  # Default to localhost if not set
 api_url = "" if api_env == "aws" else local_url
 

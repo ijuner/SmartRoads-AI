@@ -5,7 +5,7 @@ import json
 
 app = Flask(__name__)
 
-@app.route('/post/check_drowsiness', methods=['POST'])
+@app.route('/api/v1/check_drowsiness', methods=['POST'])
 def predict():
     try:
         if 'image' not in request.files:
