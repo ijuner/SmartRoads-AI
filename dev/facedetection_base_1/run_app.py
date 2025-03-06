@@ -33,7 +33,7 @@ def install_dependencies():
 def run_app():
     """Run both server and frontend"""
     # Start server in a separate process
-    server_process = subprocess.Popen([sys.executable, "face_detection_server.py"])
+    server_process = subprocess.Popen([sys.executable, "face_detection_server_opencv.py"])
 
     # Give the server a moment to start
     time.sleep(2)
