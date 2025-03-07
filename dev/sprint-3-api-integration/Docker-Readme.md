@@ -4,9 +4,9 @@
 - Make sure that you download and install Docker Desktop 
   - [Download Docker Desktop for Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
 
-- You can see two docker files 
-  - ```Dockerfile-backend```
-  - ```Dockerfile-frontend```
+- You can see a docker files 
+  - ```Dockerfile```
+  - > Ignore the Dockerfile-backend and Dockerfile-frontend
 - There is a ```docker-compose.yml``` file as well.
 - These three files help you setup docker images.
 - We will be creating two docker images one for frontend and one for backend
@@ -30,8 +30,6 @@
     - ```docker push <your-repo-name>:<tag-name>```
     - Eg. ```docker push niks1267/sprint-3-api-integration-frontend:latest```
   - Now if you visit [Docker Hub](hub.docker.com) you should see the image in your docker hub.
-
-> Similarly you can push the backend image also to docker hub.
 
 - Once you push the image to docker hub you can pull the docker image in a new machine with docker desktop installed.
 - In the above example I will use the following to pull the docker image to my local machine
