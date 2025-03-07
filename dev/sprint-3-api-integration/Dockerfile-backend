@@ -1,0 +1,56 @@
+#FROM python:3.11-rc-slim
+#
+#WORKDIR /app
+#
+## Install system dependencies
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#    libgl1-mesa-glx \
+#    libglib2.0-0 \
+#    && rm -rf /var/lib/apt/lists/*
+#
+## Copy requirements first to leverage Docker caching
+#COPY requirements-backend.txt .
+#RUN pip install --no-cache-dir -r requirements-backend.txt
+#
+## Pin torch version to one before the weights_only=True default change
+#RUN pip uninstall -y torch torchvision && \
+#    pip install torch==2.6.0 torchvision==0.21.0
+#
+## Copy application code and model
+#COPY face_detection_server_yolo.py .
+#COPY model/yolo_trained_model_03_06.pt ./model/yolo_trained_model_03_06.pt
+#
+## Create a modified version of face_detection_server_yolo.py with a fix for the model loading
+#RUN sed -i 's/model = YOLO("model\/yolo_trained_model_03_06.pt")/import torch\ntorch.serialization.add_safe_globals(["ultralytics.nn.tasks.DetectionModel"])\nmodel = YOLO("model\/yolo_trained_model_03_06.pt")/' face_detection_server_yolo.py
+#
+## Expose the port the app runs on
+#EXPOSE 8000
+#
+## Command to run the application
+#CMD ["uvicorn", "face_detection_server_yolo:app", "--host", "0.0.0.0", "--port", "8000"]
+
+FROM python:3.11-rc-slim
+
+WORKDIR /app
+
+# Install only essential system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy application code
+COPY face_detection_server_yolo.py .
+COPY requirements-backend.txt .
+
+# Create directories
+RUN mkdir -p model
+
+# Expose the port the app runs on
+EXPOSE 8000
+
+# Startup script to download dependencies and start the app
+COPY backend_start.sh .
+RUN chmod +x backend_start.sh
+
+CMD ["./backend_start.sh"]

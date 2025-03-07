@@ -23,7 +23,6 @@ app.add_middleware(
 # Load YOLO model
 model = YOLO("model/yolo_trained_model_03_06.pt")  # Update this path to where your model is stored
 
-
 @app.post("/detect_face")
 async def detect_face(
         image: UploadFile = File(...),

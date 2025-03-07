@@ -3,6 +3,7 @@ import cv2
 import time
 import requests
 import json
+import os
 from datetime import datetime
 from io import BytesIO
 from PIL import Image
@@ -15,8 +16,9 @@ st.set_page_config(page_title="SmartRoads - Face Detection", layout="wide")
 st.title("Face Detection App")
 st.write("Detect faces using webcam streaming or image upload")
 
-# Server URL
-server_url = st.text_input("Server URL", value="http://localhost:8000/detect_face")
+# Server URL - get from environment variable if available (for Docker)
+default_url = os.environ.get("SERVER_URL", "http://localhost:8000/detect_face")
+server_url = st.text_input("Server URL", value=default_url)
 
 # Confidence threshold
 min_confidence = st.slider("Minimum Confidence", min_value=0.1, max_value=1.0, value=0.7, step=0.1)
@@ -128,15 +130,21 @@ def process_frames():
 
                             # Draw rectangles on detected faces for visualization
                             if result["face_detected"]:
-                                # Convert frame to grayscale for face detection (just for visualization)
-                                gray = cv2.cvtColor(detection_frame, cv2.COLOR_BGR2GRAY)
-                                face_cascade = cv2.CascadeClassifier(
-                                    cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-                                faces = face_cascade.detectMultiScale(gray, 1.1, 5, minSize=(30, 30))
+                                # Draw rectangles based on detections from YOLO model
+                                for face in result["detections"]:
+                                    bbox = face["bbox"]
+                                    x1, y1, x2, y2 = [int(coord) for coord in bbox]
+                                    confidence = face["confidence"]
 
-                                # Draw rectangles around detected faces
-                                for (x, y, w, h) in faces:
-                                    cv2.rectangle(detection_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                                    # Draw rectangle and confidence
+                                    cv2.rectangle(detection_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                                    cv2.putText(detection_frame,
+                                                f"Conf: {confidence:.2f}",
+                                                (x1, y1 - 10),
+                                                cv2.FONT_HERSHEY_SIMPLEX,
+                                                0.5,
+                                                (0, 255, 0),
+                                                1)
 
                                 # Display the frame with face detection
                                 webcam_placeholder.image(detection_frame, channels="BGR",
