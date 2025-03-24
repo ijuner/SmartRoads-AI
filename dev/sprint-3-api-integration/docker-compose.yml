@@ -10,3 +10,5 @@ services:
       - "8000:8000"
       - "8501:8501"
     restart: unless-stopped
+    environment:
+      - FACE_DETECTION_MIN_CONFIDENCE=${FACE_DETECTION_MIN_CONFIDENCE}

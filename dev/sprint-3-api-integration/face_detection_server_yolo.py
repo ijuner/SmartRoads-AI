@@ -8,6 +8,7 @@ import time
 import uvicorn
 from typing import Optional
 from ultralytics import YOLO  # Import YOLO from ultralytics
+import os
 
 app = FastAPI(title="Face Detection API")
 
@@ -31,6 +32,11 @@ async def detect_face(
     # Start timer
     start_time = time.time()
 
+    min_confidence_env = os.getenv('FACE_DETECTION_MIN_CONFIDENCE')
+    print("[SMARTROADS AI][INFO] MINIMUM_CONFIDENCE: ${min_confidence}")
+    print("[SMARTROADS AI][INFO] MINIMUM_CONFIDENCE FROM ENVIRONMENT: ${min_confidence_env}")
+
+    min_confidence = min(float(min_confidence), float(min_confidence_env))
     # Read image file
     contents = await image.read()
     nparr = np.frombuffer(contents, np.uint8)
@@ -59,6 +65,7 @@ async def detect_face(
 
     # Calculate processing time
     processing_time_ms = (time.time() - start_time) * 1000
+    print("[SMARTROADS AI][INFO] PROCESSING TIME : ${processing_time_ms}")
 
     # Clean up temporary file
     import os
@@ -75,6 +82,7 @@ async def detect_face(
         "confidence_level": max([d["confidence"] for d in face_detections]) if face_detections else 0.0,
         "detections": face_detections
     }
+    print("[SMARTROADS AI][INFO] FINAL RESPONSE: ${response}")
 
     return response
 
