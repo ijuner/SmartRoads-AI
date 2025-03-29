@@ -1,0 +1,5 @@
+train: C:/Users/binkh/Documents/CSCN8010/CSCN8010-labs/lfw_yolo/train/images
+val: C:/Users/binkh/Documents/CSCN8010/CSCN8010-labs/lfw_yolo/val/images
+
+nc: 1
+names: ['face']
