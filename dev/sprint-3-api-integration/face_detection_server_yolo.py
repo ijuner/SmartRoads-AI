@@ -10,6 +10,8 @@ from typing import Optional
 from ultralytics import YOLO  # Import YOLO from ultralytics
 import os
 
+min_confidence_env = os.getenv('FACE_DETECTION_MIN_CONFIDENCE')
+
 app = FastAPI(title="Face Detection API")
 
 # Configure CORS to allow requests from Streamlit
@@ -32,9 +34,8 @@ async def detect_face(
     # Start timer
     start_time = time.time()
 
-    min_confidence_env = os.getenv('FACE_DETECTION_MIN_CONFIDENCE')
-    print("[SMARTROADS AI][INFO] MINIMUM_CONFIDENCE: ${min_confidence}")
-    print("[SMARTROADS AI][INFO] MINIMUM_CONFIDENCE FROM ENVIRONMENT: ${min_confidence_env}")
+    print(f"[SMARTROADS AI][INFO] MINIMUM_CONFIDENCE: {min_confidence}")
+    print(f"[SMARTROADS AI][INFO] MINIMUM_CONFIDENCE FROM ENVIRONMENT: {min_confidence_env}")
 
     min_confidence = min(float(min_confidence), float(min_confidence_env))
     # Read image file

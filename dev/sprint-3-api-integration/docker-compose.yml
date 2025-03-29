@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: smartroads-ai-face-detection-app
+    container_name: smartroads-ai-face-detection-app-logs-secrets
     ports:
       - "8000:8000"
       - "8501:8501"
