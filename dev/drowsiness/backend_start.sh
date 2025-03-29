@@ -9,10 +9,8 @@ echo "SMARTROADSAI | backend_start.sh | ENV-INFO: EYE_CONSECUTIVE_FRAMES=${EYE_C
 
 # Install Python dependencies at runtime
 echo "SMARTROADSAI | backend_start.sh | SETUP: Installing Python dependencies..."
-pip install --no-cache-dir -r requirements-backend.txt
-pip install --no-cache-dir -r requirements-frontend.txt
-pip install torch==2.6.0 torchvision==0.21.0
-pip install ultralytics==8.3.85
+pip install --no-cache-dir -r backend_requirements.txt
+pip install --no-cache-dir -r frontend_requirements.txt
 
 # Start the backend in the background
 echo "SMARTROADSAI | backend_start.sh | STARTUP: Starting drowsiness detection backend service..."

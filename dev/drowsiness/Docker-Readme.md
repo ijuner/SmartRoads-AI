@@ -24,11 +24,11 @@
   - Give the repository a name and Click Create.
   - Now open a command line in your local machine
     - Run the following command ```docker tag <your-local-image-name>:<local-tag-name> <your-repository-name-including-your-username>:<tag-name>```
-    - Eg. ````docker tag sprint-3-api-integration-frontend:latest niks1267/sprint-3-api-integration-frontend:latest````
+    - Eg. ````docker tag drowsiness-smartroadsai-drowsiness-detection-app:latest niks1267/smartroadsai_drowsiness:beta0.1````
     - After running this command
     - You can push your local image to your repo using the following command
     - ```docker push <your-repo-name>:<tag-name>```
-    - Eg. ```docker push niks1267/sprint-3-api-integration-frontend:latest```
+    - Eg. ```docker push niks1267/smartroadsai_drowsiness:beta0.1```
   - Now if you visit [Docker Hub](hub.docker.com) you should see the image in your docker hub.
 
 - Once you push the image to docker hub you can pull the docker image in a new machine with docker desktop installed.
