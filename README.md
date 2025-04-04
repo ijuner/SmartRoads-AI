@@ -2,9 +2,6 @@
 
 A Smart Road AI Capstone Project
 
-📌 Overview
-
-License Plate Detection is an AI-driven solution designed for real-time recognition and extraction of license plates from vehicle images or video streams. This project utilizes deep learning and computer vision techniques to enhance smart road monitoring, traffic management, and automated security systems.
 
 🛠️ Proposed Technologies 
 	•	Programming Language: Python
