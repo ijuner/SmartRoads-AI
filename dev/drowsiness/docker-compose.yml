@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  smartroadsai-drowsiness-detection-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartroads-ai-drowsiness-detection-app
+    ports:
+      - "8000:8000"
+      - "8501:8501"
+    restart: unless-stopped
+    environment:
+      - DROWSINESS_FRAMES_COUNT=${DROWSINESS_FRAMES_COUNT:-24}
+      - EYE_AR_THRESHOLD=${EYE_AR_THRESHOLD:-0.2}
+      - EYE_CONSECUTIVE_FRAMES=${EYE_CONSECUTIVE_FRAMES:-12}
