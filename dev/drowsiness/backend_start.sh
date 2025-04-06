@@ -25,11 +25,16 @@ echo "SMARTROADSAI | backend_start.sh | STARTUP: Starting drowsiness detection f
 streamlit run drowsiness_detection_frontend.py --server.port=8501 --server.address=0.0.0.0 &
 FRONTEND_PID=$!
 
+sleep 10
+echo "SMARTROADSAI | backend_start.sh | STARTUP: Starting drowsiness detection ML flow server..."
+mlflow server --host 0.0.0.0 --port 5000 &
+MLFLOW_PID=$!
+
 # Create a function to handle signals
 function handle_sigterm {
   echo "SMARTROADSAI | backend_start.sh | SHUTDOWN: Received SIGTERM, shutting down services..."
-  kill $FRONTEND_PID $BACKEND_PID
-  wait $FRONTEND_PID $BACKEND_PID
+  kill $FRONTEND_PID $BACKEND_PID $MLFLOW_PID
+  wait $FRONTEND_PID $BACKEND_PID $MLFLOW_PID
   exit 0
 }
 
