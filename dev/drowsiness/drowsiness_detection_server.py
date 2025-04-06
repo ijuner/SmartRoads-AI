@@ -12,13 +12,22 @@ import os
 import hashlib
 import json
 from pydantic import BaseModel
+import mlflow as mlf
+
+MLFLOW_TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI', 'http://localhost:5000')
+MLFLOW_EXPERIMENT_NAME = os.getenv('MLFLOW_EXPERIMENT_NAME', 'drowsiness_detection')
 
 # Environment variables
 FRAMES_COUNT = int(os.getenv('DROWSINESS_FRAMES_COUNT', '8'))
 EYE_AR_THRESHOLD = float(os.getenv('EYE_AR_THRESHOLD', '0.2'))  # Eye aspect ratio threshold
 EYE_CONSECUTIVE_FRAMES = int(os.getenv('EYE_CONSECUTIVE_FRAMES', '12'))  # Number of consecutive frames to trigger alarm
 
+
+mlf.set_tracking_uri(MLFLOW_TRACKING_URI)
+mlf.set_experiment(MLFLOW_EXPERIMENT_NAME)
 # User credentials (in a real app, you would use a database)
+print(f"SMARTROADSAI | drowsiness_detection_server.py: MLflow tracking at {MLFLOW_TRACKING_URI}, experiment: {MLFLOW_EXPERIMENT_NAME}")
+
 users = {
     "admin": ["admin123"],
     "user": ["user123"]
@@ -280,6 +289,21 @@ async def detect_batch_drowsiness(
     # Calculate total processing time
     processing_time_ms = (time.time() - start_time) * 1000
 
+    #MLFlow Logging
+    log_detection_to_mlflow(
+        username=username,
+        request_id=request_id,
+        ear_stats=ear_stats,
+        frame_count=valid_frames,
+        drowsy_frames=drowsy_frames,
+        drowsy_percentage=drowsy_percentage,
+        is_alert=is_alert_needed,
+        processing_time=processing_time_ms,
+        ear_threshold=EYE_AR_THRESHOLD,
+        consecutive_frames=EYE_CONSECUTIVE_FRAMES
+    )
+
+
     # Generate response
     response = {
         "request_id": request_id,
@@ -298,6 +322,38 @@ async def detect_batch_drowsiness(
         f"SMARTROADSAI | drowsiness_detection_server.py | detect_batch_drowsiness | request_id={request_id}: Completed batch processing in {processing_time_ms:.2f}ms. {drowsy_frames}/{valid_frames} drowsy frames ({drowsy_percentage:.2f}%). {alert_status}")
 
     return response
+
+
+def log_detection_to_mlflow(username, request_id, ear_stats, frame_count, drowsy_frames, drowsy_percentage,
+                            is_alert, processing_time, ear_threshold, consecutive_frames):
+    """Log drowsiness detection results to MLflow"""
+    try:
+        with mlf.start_run(run_name=f"detection_{request_id}"):
+            # Log parameters
+            mlf.log_params({
+                "username": username,
+                "eye_ar_threshold": ear_threshold,
+                "consecutive_frames_threshold": consecutive_frames,
+                "total_frames": frame_count
+            })
+
+            # Log metrics
+            mlf.log_metrics({
+                "drowsy_frames": drowsy_frames,
+                "drowsy_percentage": drowsy_percentage,
+                "avg_ear": ear_stats.get("avg_ear", 0),
+                "min_ear": ear_stats.get("min_ear", 0),
+                "max_ear": ear_stats.get("max_ear", 0),
+                "processing_time_ms": processing_time
+            })
+
+            # Log alert as a tag
+            mlf.set_tag("alert_triggered", is_alert)
+            mlf.set_tag("request_id", request_id)
+
+        print(f"SMARTROADSAI | drowsiness_detection_server.py: MLflow logging successful for request {request_id}")
+    except Exception as e:
+        print(f"SMARTROADSAI | drowsiness_detection_server.py: MLflow logging failed: {str(e)}")
 
 
 # We've removed the real-time endpoint as it's no longer needed
