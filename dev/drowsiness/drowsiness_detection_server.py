@@ -14,7 +14,7 @@ import json
 from pydantic import BaseModel
 
 # Environment variables
-FRAMES_COUNT = int(os.getenv('DROWSINESS_FRAMES_COUNT', '24'))
+FRAMES_COUNT = int(os.getenv('DROWSINESS_FRAMES_COUNT', '8'))
 EYE_AR_THRESHOLD = float(os.getenv('EYE_AR_THRESHOLD', '0.2'))  # Eye aspect ratio threshold
 EYE_CONSECUTIVE_FRAMES = int(os.getenv('EYE_CONSECUTIVE_FRAMES', '12'))  # Number of consecutive frames to trigger alarm
 

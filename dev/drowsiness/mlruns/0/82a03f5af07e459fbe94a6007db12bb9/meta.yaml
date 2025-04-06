@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Conestoga/Sem2/ProjectsInMachineLearning/SmartRoads-AI/dev/drowsiness/mlruns/0/82a03f5af07e459fbe94a6007db12bb9/artifacts
+end_time: 1743432028057
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 82a03f5af07e459fbe94a6007db12bb9
+run_name: mediapipe_drowsiness_detection
+run_uuid: 82a03f5af07e459fbe94a6007db12bb9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743428681444
+status: 3
+tags: []
+user_id: niksn
