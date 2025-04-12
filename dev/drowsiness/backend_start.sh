@@ -13,8 +13,8 @@ pip install --no-cache-dir -r backend_requirements.txt
 pip install --no-cache-dir -r frontend_requirements.txt
 
 # Start the backend in the background
-echo "SMARTROADSAI | backend_start.sh | STARTUP: Starting drowsiness detection backend service..."
-uvicorn drowsiness_detection_server:app --host 0.0.0.0 --port 8000 &
+echo "SMARTROADSAI | backend_start.sh | STARTUP: Starting drowsiness detection backend service...WITH PIPELINE INTEGRATED"
+uvicorn drowsiness_server_pipeline:app --host 0.0.0.0 --port 8000 &
 BACKEND_PID=$!
 
 # Give the backend a moment to start
