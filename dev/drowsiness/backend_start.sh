@@ -9,14 +9,12 @@ echo "SMARTROADSAI | backend_start.sh | ENV-INFO: EYE_CONSECUTIVE_FRAMES=${EYE_C
 
 # Install Python dependencies at runtime
 echo "SMARTROADSAI | backend_start.sh | SETUP: Installing Python dependencies..."
-pip install --no-cache-dir -r requirements-backend.txt
-pip install --no-cache-dir -r requirements-frontend.txt
-pip install torch==2.6.0 torchvision==0.21.0
-pip install ultralytics==8.3.85
+pip install --no-cache-dir -r backend_requirements.txt
+pip install --no-cache-dir -r frontend_requirements.txt
 
 # Start the backend in the background
-echo "SMARTROADSAI | backend_start.sh | STARTUP: Starting drowsiness detection backend service..."
-uvicorn drowsiness_detection_server:app --host 0.0.0.0 --port 8000 &
+echo "SMARTROADSAI | backend_start.sh | STARTUP: Starting drowsiness detection backend service...WITH PIPELINE INTEGRATED"
+uvicorn drowsiness_server_pipeline:app --host 0.0.0.0 --port 8000 &
 BACKEND_PID=$!
 
 # Give the backend a moment to start
@@ -27,11 +25,16 @@ echo "SMARTROADSAI | backend_start.sh | STARTUP: Starting drowsiness detection f
 streamlit run drowsiness_detection_frontend.py --server.port=8501 --server.address=0.0.0.0 &
 FRONTEND_PID=$!
 
+sleep 10
+echo "SMARTROADSAI | backend_start.sh | STARTUP: Starting drowsiness detection ML flow server..."
+mlflow server --host 0.0.0.0 --port 5000 &
+MLFLOW_PID=$!
+
 # Create a function to handle signals
 function handle_sigterm {
   echo "SMARTROADSAI | backend_start.sh | SHUTDOWN: Received SIGTERM, shutting down services..."
-  kill $FRONTEND_PID $BACKEND_PID
-  wait $FRONTEND_PID $BACKEND_PID
+  kill $FRONTEND_PID $BACKEND_PID $MLFLOW_PID
+  wait $FRONTEND_PID $BACKEND_PID $MLFLOW_PID
   exit 0
 }
 

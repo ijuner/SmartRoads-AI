@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/583399444620620648/5f41f5374abc4049be9cb34175d831ba/artifacts
+end_time: 1744033052570
+entry_point_name: ''
+experiment_id: '583399444620620648'
+lifecycle_stage: active
+run_id: 5f41f5374abc4049be9cb34175d831ba
+run_name: detection_559705bf-f1cf-470c-84fd-48ec8d8ad621
+run_uuid: 5f41f5374abc4049be9cb34175d831ba
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744033052497
+status: 3
+tags: []
+user_id: niksn

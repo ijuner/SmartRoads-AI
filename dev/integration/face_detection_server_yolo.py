@@ -9,9 +9,19 @@ import uvicorn
 from typing import Optional
 from ultralytics import YOLO  # Import YOLO from ultralytics
 import os
+import logging
 
 min_confidence_env = os.getenv('FACE_DETECTION_MIN_CONFIDENCE')
 
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler = logging.FileHandler('smartroadsai.log')  
+handler.setFormatter(formatter)  
+logger = logging.getLogger('MyApp')  
+logger.setLevel(logging.INFO)  
+logger.addHandler(handler)  
+
+
+logger.info("Face Detection API")
 app = FastAPI(title="Face Detection API")
 
 # Configure CORS to allow requests from Streamlit
@@ -24,6 +34,7 @@ app.add_middleware(
 )
 
 # Load YOLO model
+logger.info("Load YOLO model")
 model = YOLO("model/yolo_trained_model_03_06.pt")  # Update this path to where your model is stored
 
 @app.post("/detect_face")
@@ -33,6 +44,7 @@ async def detect_face(
 ):
     # Start timer
     start_time = time.time()
+    logger.info(f"start timer{start_time}")
 
     print(f"[SMARTROADS AI][INFO] MINIMUM_CONFIDENCE: {min_confidence}")
     print(f"[SMARTROADS AI][INFO] MINIMUM_CONFIDENCE FROM ENVIRONMENT: {min_confidence_env}")

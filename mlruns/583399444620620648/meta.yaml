@@ -1,0 +1,6 @@
+artifact_location: mlflow-artifacts:/583399444620620648
+creation_time: 1744032837745
+experiment_id: '583399444620620648'
+last_update_time: 1744032837745
+lifecycle_stage: active
+name: drowsiness_detection

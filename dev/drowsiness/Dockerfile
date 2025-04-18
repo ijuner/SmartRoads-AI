@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy application code
 COPY drowsiness_detection_frontend.py .
 COPY drowsiness_detection_server.py .
+COPY drowsiness_server_pipeline.py .
+COPY drowsiness_pipeline.py .
 COPY backend_requirements.txt .
 COPY frontend_requirements.txt .
 COPY alarm.mp3 .

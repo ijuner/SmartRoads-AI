@@ -15,43 +15,47 @@ import base64
 st.set_page_config(page_title="SMARTROADS AI - DROWSINESS DETECTION", layout="wide")
 
 
-# Define a function to play the alarm sound when drowsiness is detected
-def get_alarm_html():
-    audio_path = "alarm.mp3"
-    audio_placeholder = st.empty()
-    return audio_placeholder, f"""
-    <audio id="alarm" src="{audio_path}">
-        Your browser does not support the audio element.
-    </audio>
-    <script>
-        function playAlarm() {{
-            var audio = document.getElementById("alarm");
-            audio.play();
-        }}
+# Audio functionality using Streamlit's native audio component
+def setup_audio():
+    """Set up the audio component for alarms"""
+    if 'audio_placeholder' not in st.session_state:
+        st.session_state.audio_placeholder = st.empty()
+    return st.session_state.audio_placeholder
 
-        function stopAlarm() {{
-            var audio = document.getElementById("alarm");
-            audio.pause();
-            audio.currentTime = 0;
-        }}
-    </script>
-    """
 
+def autoplay_audio():
+    with open("alarm.mp3", "rb") as f:
+        data = f.read()
+        b64 = base64.b64encode(data).decode()
+        md = f"""
+            <audio controls autoplay="true">
+            <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+            </audio>
+            """
+        st.markdown(
+            md,
+            unsafe_allow_html=True,
+        )
 
 def play_alarm():
-    st.markdown("""
-    <script>
-        if (typeof playAlarm === "function") playAlarm();
-    </script>
-    """, unsafe_allow_html=True)
+    """Play the alarm sound using Streamlit's audio component"""
+    try:
+        audio_file = open("alarm.mp3", "rb")
+        audio_bytes = audio_file.read()
+        audio_file.close()
+        st.session_state.audio_placeholder.audio(audio_bytes, autoplay=True)
+        print("SMARTROADSAI | drowsiness_detection_frontend.py | play_alarm: Playing alarm sound")
+    except Exception as e:
+        print(f"SMARTROADSAI | drowsiness_detection_frontend.py | play_alarm: Error playing alarm - {str(e)}")
 
 
 def stop_alarm():
-    st.markdown("""
-    <script>
-        if (typeof stopAlarm === "function") stopAlarm();
-    </script>
-    """, unsafe_allow_html=True)
+    """Stop the alarm sound by clearing the audio component"""
+    try:
+        st.session_state.audio_placeholder.empty()
+        print("SMARTROADSAI | drowsiness_detection_frontend.py | stop_alarm: Stopping alarm sound")
+    except Exception as e:
+        print(f"SMARTROADSAI | drowsiness_detection_frontend.py | stop_alarm: Error stopping alarm - {str(e)}")
 
 
 # Server URL - get from environment variable if available (for Docker)
@@ -176,6 +180,7 @@ def process_batch_images(uploaded_files, server_url):
                     f"ALERT: Drowsiness detected in {result['drowsy_frames_count']} out of {result['total_frames']} frames!")
                 st.session_state.alarm_active = True
                 play_alarm()
+                #autoplay_audio()
             else:
                 status_placeholder.success(
                     f"No drowsiness detected. Only {result['drowsy_frames_count']} out of {result['total_frames']} frames showed signs of drowsiness.")
@@ -249,9 +254,8 @@ def main_app():
     # Add toggle for webcam vs image upload
     detection_mode = st.radio("Detection Mode", ["Webcam Batch Detection", "Batch Image Upload"])
 
-    # Add alarm audio HTML
-    alarm_placeholder, alarm_html = get_alarm_html()
-    alarm_placeholder.markdown(alarm_html, unsafe_allow_html=True)
+    # Set up audio for alarm
+    audio_placeholder = setup_audio()
 
     if detection_mode == "Webcam Batch Detection":
         st.write("This mode shows your webcam stream and captures 24 frames every 30 seconds for drowsiness analysis.")
@@ -280,11 +284,36 @@ def main_app():
             st.session_state.alarm_active = False
 
         if st.session_state.get('webcam_running', False):
-            # Initialize webcam
-            cap = cv2.VideoCapture(0)
+            # Initialize webcam with more robust error handling
+            try:
+                # Try different backends and camera indices
+                cap = None
+                for backend in [cv2.CAP_ANY, cv2.CAP_DSHOW]:  # Try default and DirectShow
+                    for camera_idx in range(2):  # Try camera 0 and 1
+                        print(
+                            f"SMARTROADSAI | drowsiness_detection_frontend.py | Trying camera index {camera_idx} with backend {backend}")
+                        try:
+                            cap = cv2.VideoCapture(camera_idx, backend)
+                            if cap.isOpened():
+                                print(
+                                    f"SMARTROADSAI | drowsiness_detection_frontend.py | Successfully opened camera {camera_idx} with backend {backend}")
+                                break
+                        except Exception as e:
+                            print(
+                                f"SMARTROADSAI | drowsiness_detection_frontend.py | Failed to open camera {camera_idx} with backend {backend}: {str(e)}")
+                    if cap is not None and cap.isOpened():
+                        break
 
-            if not cap.isOpened():
-                st.error("Could not open webcam")
+                if cap is None or not cap.isOpened():
+                    # One last attempt with default settings
+                    cap = cv2.VideoCapture(0)
+            except Exception as e:
+                print(f"SMARTROADSAI | drowsiness_detection_frontend.py | Error initializing camera: {str(e)}")
+                cap = None
+
+            if cap is None or not cap.isOpened():
+                st.error("Could not open webcam. Please check your camera connection and permissions.")
+                st.session_state.webcam_running = False
             else:
                 # Set info message
                 info_placeholder.info("Webcam is active. Displaying stream and capturing batches every 30 seconds...")
@@ -294,9 +323,19 @@ def main_app():
                         # Capture a frame for display
                         ret, frame = cap.read()
 
+                        # If frame capture fails, try again with a small delay
                         if not ret:
-                            st.error("Failed to capture frame from webcam")
-                            break
+                            print(
+                                f"SMARTROADSAI | drowsiness_detection_frontend.py | Frame capture failed, retrying...")
+                            time.sleep(0.5)  # Wait a bit
+                            ret, frame = cap.read()
+
+                        if not ret:
+                            print(f"SMARTROADSAI | drowsiness_detection_frontend.py | Frame capture failed after retry")
+                            st.error(
+                                "Failed to capture frame from webcam. The camera may be in use by another application.")
+                            time.sleep(2)  # Add longer delay before next attempt
+                            continue
 
                         # Display the frame
                         frame_placeholder.image(frame, channels="BGR", caption="Live Webcam Feed")
