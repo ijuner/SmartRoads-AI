@@ -3,11 +3,7 @@
 A Smart Road AI Capstone Project
 
 
-🛠️ Proposed Technologies 
-	•	Programming Language: Python
-	•	Computer Vision: OpenCV
-	•	OCR Engine: Tesseract OCR
-	•	Dataset: Open-source license plate datasets for training
+The Driver Drowsiness Detection System is designed with two key features. The first is Face Detection, which identifies and tracks human faces in real-time from image or video streams. Using MediaPipe, this module outputs bounding boxes around detected faces, enabling accurate recognition and monitoring for enhanced safety and user interaction. The second feature is Driver Drowsiness Detection, which aims to reduce accident risk by analyzing eye movements and facial expressions to determine signs of fatigue. Also powered by MediaPipe, this module processes live camera feeds to output a binary drowsiness alert (True/False), ensuring timely warnings to keep drivers safe.
 
  ⚡ Installation
 
