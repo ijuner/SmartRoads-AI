@@ -1,0 +1,21 @@
+[allowlist]
+paths = ["tests/", "examples/"]
+regexes = ["dummy_token_123"]
+
+[[rules]]
+description = "Private RSA Key"
+id = "rsa-private-key"
+regex = '''-----BEGIN RSA PRIVATE KEY-----'''
+tags = ["rsa", "key", "private"]
+
+[[rules]]
+description = "AWS Access Key ID"
+id = "aws-access-key-id"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["aws", "key", "cloud"]
+
+[[rules]]
+description = "Generic API Key"
+id = "generic-api-key"  # ✅ This was missing
+regex = '''(?i)api[_-]?key["'\s:=]*["'\s]*[a-zA-Z0-9_\-]{16,64}'''
+tags = ["apikey"]

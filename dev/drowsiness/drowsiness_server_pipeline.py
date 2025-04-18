@@ -12,6 +12,8 @@ import json
 from pydantic import BaseModel
 import mlflow as mlf
 from drowsiness_pipeline import process_batch_images
+from dotenv import load_dotenv
+load_dotenv()
 
 MLFLOW_TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI', 'http://localhost:5000')
 MLFLOW_EXPERIMENT_NAME = os.getenv('MLFLOW_EXPERIMENT_NAME', 'drowsiness_detection')
